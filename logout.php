@@ -1,0 +1,9 @@
+<?php
+    session_start();
+    unset($_SESSION['knn_mhs_prestasi_id']);
+    unset($_SESSION['knn_mhs_prestasi_username']);
+    unset($_SESSION['knn_mhs_prestasi_level']);
+    unset($_SESSION['knn_mhs_prestasi_key']);
+    unset($_SESSION['knn_mhs_prestasi_last_login']);
+    session_destroy();
+    header("location:login.php");
