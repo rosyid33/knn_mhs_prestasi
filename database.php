@@ -262,6 +262,18 @@ class database {
         }
     }
 
+    /**
+     * ambil data login user
+     * @param type $id_login
+     * @return type
+     */
+    function get_login_by_id($id_login){
+        $sql = "SELECT * FROM login WHERE id_login = ".$id_login;
+        $result = $this->db_query($sql);
+        $row = $this->db_fetch_array($result);
+        return $row;
+    }
+
 }
 
 ?>

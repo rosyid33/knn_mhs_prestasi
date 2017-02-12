@@ -12,7 +12,7 @@ include_once "fungsi.php";
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="page_title">
-                    <h2>Data Periode</h2>
+                    <h2>Data Mahasiswa</h2>
                 </div>
             </div>
         </div>
@@ -33,32 +33,33 @@ if(isset($_GET['pesan_success'])){
 if(isset($_POST['submit'])){
     $input_error = 0;
     //CEK EXISTING DATA IN TABLE
-    $cek_exist = $db_object->count_data("periode",
-                            'semester',
-                            "semester='".$_POST['semester']."' AND tahun='".$_POST['tahun']."'");
+    $cek_exist = $db_object->count_data("mahasiswa",
+                            'nim',
+                            "nim='".$_POST['nim']."'");
     if ($cek_exist[0]>0) {
         $input_error = 1;
         //$pesan_error = ("Data yang dimasukkan sudah ada");
         ?>
-        <script> location.replace("?menu=periode&pesan_error=Data yang dimasukkan sudah ada "); </script>
+        <script> location.replace("?menu=mahasiswa&pesan_error=Data yang dimasukkan sudah ada "); </script>
         <?php
     }
-    
+
     if(!$input_error){
-        $table = "periode";
-        $field_value = array("semester"=>$_POST['semester'],
-            "tahun"=>$_POST['tahun']);
+        $table = "mahasiswa";
+        $field_value = array("nim"=>$_POST['nim'],
+            "nama"=>$_POST['nama'],
+            "tahun_masuk"=>$_POST['tahun']);
 
         $query = $db_object->insert_record($table, $field_value);
         if ($query) {
                 //$pesan_success = ("Data berhasil disimpan");
                 ?>
-                <script> location.replace("?menu=periode&pesan_success=Data berhasil disimpan"); </script>
+                <script> location.replace("?menu=mahasiswa&pesan_success=Data berhasil disimpan"); </script>
                 <?php
         }else{
                 //$pesan_error = ("Gagal menyimpan data <br>(".$db_object->db_error().") ");
                 ?>
-                <script> location.replace("?menu=periode&pesan_error=Gagal menyimpan data "); </script>
+                <script> location.replace("?menu=mahasiswa&pesan_error=Gagal menyimpan data "); </script>
                 <?php
         }
     }
@@ -69,26 +70,30 @@ if(isset($_GET['delete'])){
 
     $input_error = 0;
     //CEK EXISTING DATA IN TABLE
-    $cek_exist = $db_object->count_data("dosen_mk",
-                            'id_periode',
-                            "id_periode='".$id_delete."'");
+    $cek_exist = $db_object->count_data("peserta_mk",
+                            'id_mhs',
+                            "id_mhs='".$id_delete."'");
     if ($cek_exist[0]>0) {
         $input_error = 1;
         ?>
-        <script> location.replace("?menu=periode&pesan_error=Data masih digunakan"); </script>
+        <script> location.replace("?menu=mahasiswa&pesan_error=Data masih digunakan"); </script>
         <?php
     }
     if(!$input_error){
+        $user = $db_object->find_in_table("mahasiswa", 'id_login', "WHERE id_mhs='$id_delete'");
+
         //delete
-        $sql_del = "DELETE FROM periode WHERE id_periode = '$id_delete'";
+        $sql_del = "DELETE FROM mahasiswa WHERE id_mhs = '$id_delete'";
         $tr=$db_object->db_query($sql_del);
+
+        $sql_del = "DELETE FROM login WHERE id_login = '".$user['id_login']."'";
+        $db_object->db_query($sql_del);
         ?>
-        <script> location.replace("?menu=periode&pesan_success=berhasil delete data"); </script>
+        <script> location.replace("?menu=mahasiswa&pesan_success=berhasil delete data"); </script>
         <?php
     }
 }
-
-$sql = "select * from periode order by(id_periode)";
+$sql = "select * from mahasiswa order by(id_mhs)";
 $query=$db_object->db_query($sql);
 $jumlah=$db_object->db_num_rows($query);
 ?>
@@ -100,13 +105,19 @@ $jumlah=$db_object->db_num_rows($query);
             <form method="post" action="">
                 <div class="form-group">
                     <div class="input-group">
-                        <label>Semester</label>
-                        <input name="semester" type="text" class="form-control" required="required"/>
+                        <label>NIM</label>
+                        <input name="nim" type="text" class="form-control" required="required"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group">
-                        <label>Tahun</label>
+                        <label>Nama Mahasiswa</label>
+                        <input name="nama" type="text" class="form-control" required="required"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label>Tahun Masuk</label>
                         <input name="tahun" type="text" class="form-control" required="required"/>
                     </div>
                 </div>
@@ -132,18 +143,29 @@ $jumlah=$db_object->db_num_rows($query);
             ?>
             <table class='table table-bordered table-striped  table-hover'>
                 <tr>
-                    <th>No</th><th>Semester</th><th>Tahun</th><th></th>
+                    <th>No</th><th>NIM</th><th>Nama Mahasiswa</th>
+                    <th>Tahun Masuk</th><th>Username</th><th></th>
                 </tr>
                 <?php
                     $no=1;
                     while($row=$db_object->db_fetch_array($query)){
+                        $login = $db_object->get_login_by_id($row['id_login']);
+                        $user = "";
+                        if(count($login)<=0){
+                            $user = 'belum register';
+                        }
+                        else{
+                            $user = $login['username'];
+                        }
                     ?>
                     <tr>
                             <td><?php echo $no;?></td>
-                            <td><?php echo $row['semester'];?></td>
-                            <td><?php echo $row['tahun'];?></td>
+                            <td><?php echo $row['nim'];?></td>
+                            <td><?php echo $row['nama'];?></td>
+                            <td><?php echo $row['tahun_masuk'];?></td>
+                            <td><?php echo $user;?></td>
                             <td>
-                                <a href="?menu=periode&delete=<?php echo $row['id_periode'];?>"
+                                <a href="?menu=mahasiswa&delete=<?php echo $row['id_mhs'];?>"
                                    onClick="return confirm('Are you sure, want to delete?')">
                                     <img src="images/icon/delete.gif"/>
                                 </a>
