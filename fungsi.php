@@ -106,7 +106,63 @@ function list_levels($name, $selected_id='', $required=false, $all=false, $text_
 	echo "</select>";
 }
 //END LEVEL USERS===================================================================
+function list_periode($name, $selected_id='', $required=false, $all=false, $text_all='-', $where='', $params=''){
+        $db_obj = new database();
+        
+    $table = "periode";
+        $query = $db_obj->display_table_all_column($table, $where, false, false, 0, 0, 'id_periode');
+    echo "<select name='$name' "; if($required) echo "required='required'"; echo " class='form-control' ".$params." >";
+        //pilihan semua / kosong
+        if($all){                
+            echo "<option value=''> $text_all </option>";
+        }
+    
+        //loop data
+        while($myrow = $db_obj->db_fetch_array($query)){    
+            echo "<option value='".$myrow['id_periode']."' "; if($selected_id==$myrow['id_periode']) echo "selected='selected'";
+            echo ">".$myrow['semester']." - ".$myrow['tahun']."</option>";       
+        }
+    echo "</select>";
+}
 
+function list_mata_kuliah($name, $selected_id='', $required=false, $all=false, $text_all='-', $where='', $params=''){
+        $db_obj = new database();
+        
+    $table = "mata_kuliah";
+        $query = $db_obj->display_table_all_column($table, $where, false, false, 0, 0, 'id_mk');
+    echo "<select name='$name' "; if($required) echo "required='required'"; echo " class='form-control' ".$params." >";
+        //pilihan semua / kosong
+        if($all){                
+            echo "<option value=''> $text_all </option>";
+        }
+    
+        //loop data
+        while($myrow = $db_obj->db_fetch_array($query)){    
+            echo "<option value='".$myrow['id_mk']."' "; if($selected_id==$myrow['id_mk']) echo "selected='selected'";
+            echo ">".$myrow['n_mk']."</option>";       
+        }
+    echo "</select>";
+}
+
+
+function list_dosen($name, $selected_id='', $required=false, $all=false, $text_all='-', $where='', $params=''){
+        $db_obj = new database();
+        
+    $table = "dosen";
+        $query = $db_obj->display_table_all_column($table, $where, false, false, 0, 0, 'id_dosen');
+    echo "<select name='$name' "; if($required) echo "required='required'"; echo " class='form-control' ".$params." >";
+        //pilihan semua / kosong
+        if($all){                
+            echo "<option value=''> $text_all </option>";
+        }
+    
+        //loop data
+        while($myrow = $db_obj->db_fetch_array($query)){    
+            echo "<option value='".$myrow['id_dosen']."' "; if($selected_id==$myrow['id_dosen']) echo "selected='selected'";
+            echo ">".$myrow['nama']."</option>";       
+        }
+    echo "</select>";
+}
 
 
 function list_bulan($selected_id){

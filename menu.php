@@ -18,7 +18,8 @@
                         <li><a href="index.php?menu=dosen">Dosen</a></li>
                         <li><a href="index.php?menu=mata_kuliah">Mata Kuliah</a></li>
                         <li><a href="index.php?menu=periode">Periode</a></li>
-                        <li class="magz-dropdown"><a href="index.php?menu=">Troubleshoot <i class="ion-ios-arrow-right"></i></a>
+                        <li><a href="index.php?menu=perkuliahan">Perkuliahan</a></li>
+                        <!-- <li class="magz-dropdown"><a href="index.php?menu=">Troubleshoot <i class="ion-ios-arrow-right"></i></a>
                             <ul>
                                 <li><a href="index.php?menu=">Software</a></li>
                                 <li class="magz-dropdown"><a href="index.php?menu=">Hardware <i class="ion-ios-arrow-right"></i></a>
@@ -30,7 +31,7 @@
                                 </li>
                                 <li><a href="index.php?menu=">Menu 3</a>
                             </ul>
-                        </li>
+                        </li> -->
 
                     </ul>
                 </li>
