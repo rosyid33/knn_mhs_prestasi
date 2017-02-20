@@ -20,8 +20,9 @@ function proses_mining($db_object, $k=5) {
     $jarak = array();
     $a = 0;
     //hitung jarak
+    echo "<table border=1>";
     while ($row = $db_object->db_fetch_array($query)) {
-
+        echo "<tr>";
         $sql1 = "SELECT
                 period.`semester`,period.`tahun`,
                 mhs.`nim`, mhs.`nama`,
@@ -50,22 +51,6 @@ function proses_mining($db_object, $k=5) {
                     absolute($row['mk13'] - $row1['mk13']) +
                     absolute($row['mk14'] - $row1['mk14']) +
                     absolute($row['mk15'] - $row1['mk15']);
-            $table = "jarak";
-            $field_value = array("column"=>$a,
-                "row"=>$b,
-                "jarak"=>$jarak[$a][$b]);
-            $query_in = $db_object->insert_record($table, $field_value);
-            $b++;
-        }
-        $a++;
-    }
-
-    echo "<table border=1>";
-    $a = 0;
-    while ($a < count($jarak)) {
-        echo "<tr>";
-        $b = 0;
-        while ($b < count($jarak)) {
             echo "<td>" . $jarak[$a][$b] . "</td>";
             $b++;
         }
@@ -78,11 +63,8 @@ function proses_mining($db_object, $k=5) {
     $a=0;
     $jarak_k_terkecil = array();
     while ($a < count($jarak)) {
-    	$sql = "SELECT * FROM jarak WHERE ROW=".$a." AND jarak > 0 ORDER BY jarak LIMIT ".$k;
-    	$query = $db_object->db_query($sql);
-    	while($row = $db_object->db_fetch_array($query)){
-    		$jarak_k_terkecil[$a][] = $row['jarak'];
-    	}
+        $jarak_k_terkecil[$a] = get_jarak_terkecil_sebanyak_k($jarak[$a], $k);
+        $a++;
     }
     
     //hitung average tiap jarak data
@@ -93,13 +75,50 @@ function proses_mining($db_object, $k=5) {
         $a++;
     }
     
-    $average_all_avg_jarak = array();
+    //average from all average...
+    $average_all_avg_jarak = average($average_tiap_jarak);
+    
+    //standard deviasi
+    $std_deviasi1 = array();//pengurangan pangkat 2
+    $a=0;
+    while($a < count($average_tiap_jarak)){
+        $std_deviasi1[$a] = pow($average_tiap_jarak[$a] - $average_all_avg_jarak,2);
+        $a++;
+    }
+    
+    $std_deviasi2 = array_sum($std_deviasi1);
+    $std_deviasi3 = $std_deviasi2/(count($std_deviasi1)-1);
+    $stdDeviasi = sqrt($std_deviasi3);
+    
+    $treshold = $average_all_avg_jarak+($stdDeviasi*3);//3 itu apa???
+    echo "Treshold = ".price_format($treshold);
+    //
+    
 }
 
 function absolute($nilai) {
     return ($nilai < 0) ? ($nilai * -1) : ($nilai);
 }
 
+function get_jarak_terkecil_sebanyak_k($data, $k){
+    $return = array();
+    $x=0;
+    while($x<$k){
+        $min = min($data);
+        if($min>0){
+            $return[] = $min;
+            $x++;
+        }
+        //$data = array_diff($data, [$min]);
+        if(($key = array_search($min, $data)) !== false) {
+            unset($data[$key]);
+        }
+    }
+    return $return;
+}
+
 function average($nilai){
-    return array_sum($nilai) / count($nilai);
+    $a = array_sum($nilai);
+    $b = count($nilai);
+    return  $a/$b;
 }
